@@ -42,6 +42,22 @@ def MatrixForCMDemo(matrix):
 			ret = ret + str(column)
 	return ret
 
+def MatrixForXRandR(matrix):
+	ret = ""
+	for row in matrix:
+		for column in row:
+			if (len(ret) > 0):
+				ret = ret + ","
+			if (column > 0):
+				val = int(column * 2**32)
+			else:
+				val = -int(column * 2**32)
+			if (val > 2**31):
+				val = val - 2**32
+			ret = ret + str(val) + ",0"
+	return ret
+
+
 
 D65 = Point(0.312713, 0.329016)
 
@@ -53,19 +69,19 @@ P3Display = ColorSpace(Point(0.68, 0.32), Point(0.265, 0.69), Point(0.15, 0.06),
 #    Green: 0.2714, 0.6328
 #    Blue : 0.1484, 0.0556
 #    White: 0.3134, 0.3291
+M28u = ColorSpace(Point(0.6777, 0.3144), Point(0.2714, 0.6328), Point(0.1484, 0.0556), Point(0.3134, 0.3291))
 
 # Samsung LS27A70
 #    Red  : 0.6796, 0.3203
 #    Green: 0.2548, 0.6796
 #    Blue : 0.1503, 0.0595
 #    White: 0.3134, 0.3291
-
-M28u = ColorSpace(Point(0.6777, 0.3144), Point(0.2714, 0.6328), Point(0.1484, 0.0556), Point(0.3134, 0.3291))
 LS27A70 = ColorSpace(Point(0.6796, 0.3203), Point(0.2548, 0.6796), Point(0.1503, 0.0595), Point(0.3134, 0.3291))
 
 matrix = RGBtoRGB(sRGB, M28u)
-print("cmdemo -o DisplayPort-0 -d srgb -r srgb -c " + MatrixForCMDemo(matrix))
+print("xrandr --verbose --output DisplayPort-0 --set CTM '" + MatrixForXRandR(matrix) + "'")
+print("cmdemo -o DisplayPort-0 -d srgb -r srgb -c '" + MatrixForCMDemo(matrix) + "'")
 
 matrix = RGBtoRGB(sRGB, LS27A70)
-print("cmdemo -o DisplayPort-1 -d srgb -r srgb -c " + MatrixForCMDemo(matrix))
-
+print("xrandr --verbose --output DisplayPort-1 --set CTM '" + MatrixForXRandR(matrix) + "'")
+print("cmdemo -o DisplayPort-1 -d srgb -r srgb -c '" + MatrixForCMDemo(matrix) + "'")
