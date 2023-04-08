@@ -1,0 +1,1 @@
+ACTION=="change", SUBSYSTEM=="drm", KERNEL=="card0", ENV{DISPLAY}=":0", ENV{XAUTHORITY}="/var/run/lightdm/root/:0", RUN="/bin/bash /usr/local/bin/cmdemo-setcm.sh &"
