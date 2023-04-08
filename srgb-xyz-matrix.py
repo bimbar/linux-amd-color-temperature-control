@@ -2,6 +2,8 @@
 # and https://mina86.com/2019/srgb-xyz-matrix/
 
 import numpy as np
+import argparse as ap
+
 
 class Point:
 	def __init__(self, x = 0, y = 0):
@@ -61,27 +63,51 @@ def MatrixForXRandR(matrix):
 
 D65 = Point(0.312713, 0.329016)
 
-sRGB = ColorSpace(Point(0.64, 0.33), Point(0.3, 0.6), Point(0.15, 0.06), D65)
-P3Display = ColorSpace(Point(0.68, 0.32), Point(0.265, 0.69), Point(0.15, 0.06), D65)
+monitorType = {}
 
+# sRGB
+monitorType["srgb"] = ColorSpace(Point(0.64, 0.33), Point(0.3, 0.6), Point(0.15, 0.06), D65)
+# DisplayP3
+monitorType["displayp3"] = ColorSpace(Point(0.68, 0.32), Point(0.265, 0.69), Point(0.15, 0.06), D65)
 # Gigabyte M28u
-#    Red  : 0.6777, 0.3144
-#    Green: 0.2714, 0.6328
-#    Blue : 0.1484, 0.0556
-#    White: 0.3134, 0.3291
-M28u = ColorSpace(Point(0.6777, 0.3144), Point(0.2714, 0.6328), Point(0.1484, 0.0556), Point(0.3134, 0.3291))
-
+monitorType["m28u"] = ColorSpace(Point(0.6777, 0.3144), Point(0.2714, 0.6328), Point(0.1484, 0.0556), Point(0.3134, 0.3291))
 # Samsung LS27A70
-#    Red  : 0.6796, 0.3203
-#    Green: 0.2548, 0.6796
-#    Blue : 0.1503, 0.0595
-#    White: 0.3134, 0.3291
-LS27A70 = ColorSpace(Point(0.6796, 0.3203), Point(0.2548, 0.6796), Point(0.1503, 0.0595), Point(0.3134, 0.3291))
+monitorType["ls27a70"] = ColorSpace(Point(0.6796, 0.3203), Point(0.2548, 0.6796), Point(0.1503, 0.0595), Point(0.3134, 0.3291))
 
-matrix = RGBtoRGB(sRGB, M28u)
-print("xrandr --verbose --output DisplayPort-0 --set CTM '" + MatrixForXRandR(matrix) + "'")
-print("cmdemo -o DisplayPort-0 -d srgb -r srgb -c '" + MatrixForCMDemo(matrix) + "'")
 
-matrix = RGBtoRGB(sRGB, LS27A70)
-print("xrandr --verbose --output DisplayPort-1 --set CTM '" + MatrixForXRandR(matrix) + "'")
-print("cmdemo -o DisplayPort-1 -d srgb -r srgb -c '" + MatrixForCMDemo(matrix) + "'")
+parser = ap.ArgumentParser(description="Generate a CTM matrix to map your monitor's colorspace to sRGB",
+                                 formatter_class=ap.ArgumentDefaultsHelpFormatter)
+parser.add_argument("-t", help="preconfigured monitor type, for a list use -t help")
+parser.add_argument("-r", help="red primary, for example -r 0.6777,0.3144", default="0.64,0.33")
+parser.add_argument("-g", help="green primary, for example -g 0.2714,0.6328", default="0.3,0.6")
+parser.add_argument("-b", help="blue primary, for example -b 0.1484,0.0556", default="0.15,0.06")
+parser.add_argument("-w", help="white point, for example -w 0.312713,0.329016, defaults to D65", default="0.312713,0.329016")
+parser.add_argument("-output", help="the xrandr name for the output to be configured", default="DisplayPort-0")
+args = parser.parse_args()
+config = vars(args)
+
+c = ColorSpace()
+c.w = D65
+
+if (config["r"]):
+	x,y = config["r"].split(",")
+	c.r=Point(float(x), float(y))
+if (config["g"]):
+	x,y = config["g"].split(",")
+	c.g=Point(float(x), float(y))
+if (config["b"]):
+	x,y = config["b"].split(",")
+	c.b=Point(float(x), float(y))
+if (config["w"]):
+	x,y = config["w"].split(",")
+	c.w=Point(float(x), float(y))
+if (config["t"] and config["t"] in monitorType.keys()):
+	c = monitorType[config["t"]]
+elif (config["t"] == "help"):
+	for type in monitorType:
+		print(type)
+	exit()
+
+matrix = RGBtoRGB(monitorType["srgb"], c)
+
+print("xrandr --verbose --output " + config["output"] + " --set CTM '" + MatrixForXRandR(matrix) + "'")
