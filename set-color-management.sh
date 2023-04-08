@@ -17,7 +17,7 @@ if [ "connected" == "$DP0_STATUS" ]; then
 fi
 
 if [ "connected" == "$DP1_STATUS" ]; then
-  xrandr --verbose --output DisplayPort-1 --set CTM '-857173740,0,839257518,0,-5553092,0,140602800,0,-139549692,0,5821178,0,72016672,0,231606616,0,-293032401,0'
+  xrandr --verbose --output DisplayPort-1 --set CTM '-857173740,0,839257518,0,5553092,0,140602800,0,-139549692,0,5821178,0,72016672,0,231606616,0,-293032401,0'
 fi
 
 
