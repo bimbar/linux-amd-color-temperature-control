@@ -3,10 +3,12 @@
 Many thanks to https://mina86.com/2019/srgb-xyz-matrix/ and https://arjun.lol/notes/clamping-wcg-displays-to-srgb-in-linux/, I basically reimplemented his C# code in python.
 NB: In contrast to this article, cmdemo is not needed, this can also directly be set via xrandr.
 
-This is not really coded for general usability, but it's a fair starting point for anyone who wants to do this himself and is able to do a little bit of programming.
+This python script uses the color primaries of a monitor (to be found in EDID data or possibly in some sort of monitor profile you measured using, possibly, argyllcms) and generates a xrandr call to clamp this wide color gamut monitor to sRGB.
+This can then be used in udev hotplug scripts (see examples).
 
-This python script uses the color primaries of a monitor (to be found in EDID data or possibly in some sort of monitor profile you measured using, possibly, argyllcms) and generates a xrandr or cmdemo call to clamp this wide color gamut monitor to sRGB. This can then be used in .xprofile or something similar so it runs at login.
+Example:
 
-Usage: insert your monitor parameters into the python script at the bottom and run it.
-
-Also, please check out the udev integration scripting so it's called automatically whenever the display in question is connected.
+```
+$ python3 srgb-xyz-matrix.py -r 0.6777,0.3144 -g 0.2714,0.6328 -b 0.1484,0.0556 -w 0.3134,0.3291 -o DisplayPort-1
+xrandr --verbose --output DisplayPort-1 --set CTM '-598257770,0,561864587,0,10554227,0,160761477,0,-185955614,0,31903097,0,46902368,0,64628669,0,-100560476,0'
+```
