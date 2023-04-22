@@ -12,3 +12,5 @@ Example:
 $ python3 srgb-xyz-matrix.py -r 0.6777,0.3144 -g 0.2714,0.6328 -b 0.1484,0.0556 -w 0.3134,0.3291 -o DisplayPort-1
 xrandr --verbose --output DisplayPort-1 --set CTM '-598257770,0,561864587,0,10554227,0,160761477,0,-185955614,0,31903097,0,46902368,0,64628669,0,-100560476,0'
 ```
+
+After you have this command, use the scripts / udev integrations in the repo. Also call set-color-management.sh from your .profile or .xprofile or .bashrc or whatever is called when you log into X.
