@@ -14,3 +14,5 @@ xrandr --verbose --output DisplayPort-1 --set CTM '-598257770,0,561864587,0,1055
 ```
 
 After you have this command, use the scripts / udev integrations in the repo. Also call set-color-management.sh from your .profile or .xprofile or .bashrc or whatever is called when you log into X.
+
+# NB: KDE Plasma does this on its own if you load a color profile.
